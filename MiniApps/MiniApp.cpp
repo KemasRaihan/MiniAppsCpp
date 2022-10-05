@@ -7,13 +7,22 @@ int main()
 {
 	// changes the starting point in the sequence of values between 0 to RAND_MAX in the rand() function
 	srand(time(NULL));
+
 	displayMenu();
+
+	// check for memory leaks in the programme
+#ifdef _DEBUG
+	  _CrtSetBreakAlloc(87);
+	_onexit(_CrtDumpMemoryLeaks);
+#endif
+
 	return 0;
 }
 
 void displayMenu()
 {
 	bool terminate = false;
+	int option;
 	do
 	{
 		cout << "P4CS Mini Applications" << endl;
@@ -26,7 +35,6 @@ void displayMenu()
 		cout << "9) Quit" << endl;
 
 		cout << "\nPlease enter an option: ";
-		int option;
 		cin >> option;
 		switch (option)
 		{
@@ -34,10 +42,10 @@ void displayMenu()
 		case 2:SquareRootCalculator(); break;
 		case 3:CheckDigitGenerator(); break;
 		case 4:CheckDigitChecker(); break;
-		case 9: terminate = true; break;
-		default:cout << "Invalid option. Please select again." << endl;
+		case 9: cout << "\nGoodbye!"; break;
+		default:cout << "\nInvalid option. Please select again.\n" << endl;
 		}
-	} while (!terminate);
+	} while (option!=9);
 }
 
 
@@ -67,18 +75,18 @@ void KeepCountingGame()
 	while (question <= 10 && !userAnswersIncorrectly)
 	{
 		secondOperand = returnRandomInteger(range);
-		randOperator = rand() % 2 == 0 ? "+" : "-";
+		randOperator = (rand() < RAND_MAX / 2) ? "+" : "-";
 
 		cout << "\n\nQuestion " << question << " : ";
 		cout << firstOperand << " " << randOperator << " " << secondOperand;
 		cout << " = ";
 		cin >> userAnswer;
 
-		correctAnswer = randOperator == "+" ? firstOperand + secondOperand : firstOperand - secondOperand;
+	correctAnswer = (randOperator == "+") ? (firstOperand + secondOperand) : (firstOperand - secondOperand);
 
 		if (userAnswer != correctAnswer) userAnswersIncorrectly = true;
 
-		firstOperand = correctAnswer;
+		firstOperand = secondOperand;
 		question++;
 
 	}
@@ -108,6 +116,10 @@ void SquareRootCalculator()
 	int* bounds = findBounds(inputNumber);
 	lowerBound = bounds[0], upperBound = bounds[1];
 
+	// clean up array memory
+	delete[] bounds;
+	bounds = nullptr;
+
 	// calculates average until the difference between the bounds is less than the decimal place precision
 	double average;
 	double averageSquared;
@@ -123,8 +135,6 @@ void SquareRootCalculator()
 	cout << "The square root of " << inputNumber << " to ";
 	cout << numberOfDecimalPlaces << " decimal places is ";
 	cout << (int)(average * pow(10.0, numberOfDecimalPlaces)) / (pow(10.0, numberOfDecimalPlaces)) << "\n\n";
-
-
 }
 
 void CheckDigitGenerator()
@@ -181,15 +191,15 @@ int returnRandomInteger(int range)
 
 bool numberIsNDigits(int number, int N)
 {
-	return (number / pow(10, N) > 1e-1 && number / pow(10, N-1) < 10);
+	return (number >= pow(10,N-1) && number < pow(10,N));
 }
 
 // find upper and lower bounds of the square root of the number
 int* findBounds(int number)
 {
+	int* bounds = (int*)malloc(sizeof(int) * 2);
 	int n = 0;
 	while (n * n < number) n++;
-	int arr[2] = { n - 1,n };
-	int* ptr = arr;
-	return arr;
+	bounds[0] = n-1, bounds[1] = n;
+	return bounds;
 }
