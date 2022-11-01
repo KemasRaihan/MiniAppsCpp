@@ -1,56 +1,9 @@
-#include "MiniApp.h"
+#include "MiniApps.h"
 #include <iostream>
-#include <chrono>
+
 using namespace std;
 
-int main()
-{
-	// changes the starting point in the sequence of values between 0 to RAND_MAX in the rand() function
-	srand(time(NULL));
-
-	displayMenu();
-
-	// check for memory leaks in the programme
-#ifdef _DEBUG
-	  _CrtSetBreakAlloc(87);
-	_onexit(_CrtDumpMemoryLeaks);
-#endif
-
-	return 0;
-}
-
-void displayMenu()
-{
-	bool terminate = false;
-	int option;
-	do
-	{
-		cout << "P4CS Mini Applications" << endl;
-		cout << "----------------------" << endl;
-		cout << "Please select an option: " << endl;
-		cout << "1) Keep Counting Game" << endl;
-		cout << "2) Square Root Calculator" << endl;
-		cout << "3) Check-Digit Generator" << endl;
-		cout << "4) Check-Digit Checker" << endl;
-		cout << "9) Quit" << endl;
-
-		cout << "\nPlease enter an option: ";
-		cin >> option;
-		switch (option)
-		{
-		case 1:KeepCountingGame(); break;
-		case 2:SquareRootCalculator(); break;
-		case 3:CheckDigitGenerator(); break;
-		case 4:CheckDigitChecker(); break;
-		case 9: cout << "\nGoodbye!"; break;
-		default:cout << "\nInvalid option. Please select again.\n" << endl;
-		}
-	} while (option!=9);
-}
-
-
-
-void KeepCountingGame()
+void MiniApps::KeepCountingGame()
 {
 	cout << "Keep Counting Game\n";
 	cout << "-------------------\n";
@@ -82,7 +35,7 @@ void KeepCountingGame()
 		cout << " = ";
 		cin >> userAnswer;
 
-	correctAnswer = (randOperator == "+") ? (firstOperand + secondOperand) : (firstOperand - secondOperand);
+		correctAnswer = (randOperator == "+") ? (firstOperand + secondOperand) : (firstOperand - secondOperand);
 
 		if (userAnswer != correctAnswer) userAnswersIncorrectly = true;
 
@@ -100,7 +53,7 @@ void KeepCountingGame()
 	}
 }
 
-void SquareRootCalculator()
+void MiniApps::SquareRootCalculator()
 {
 	cout << "Square Root Calculator\n";
 	cout << "-------------------\n";
@@ -113,12 +66,8 @@ void SquareRootCalculator()
 
 	double lowerBound, upperBound;
 
-	int* bounds = findBounds(inputNumber);
-	lowerBound = bounds[0], upperBound = bounds[1];
-
-	// clean up array memory
-	delete[] bounds;
-	bounds = nullptr;
+	lowerBound = 0;
+	upperBound = inputNumber;
 
 	// calculates average until the difference between the bounds is less than the decimal place precision
 	double average;
@@ -137,7 +86,7 @@ void SquareRootCalculator()
 	cout << (int)(average * pow(10.0, numberOfDecimalPlaces)) / (pow(10.0, numberOfDecimalPlaces)) << "\n\n";
 }
 
-void CheckDigitGenerator()
+void MiniApps::CheckDigitGenerator()
 {
 	cout << "Check Digit Generator\n";
 	cout << "-------------------\n";
@@ -166,7 +115,7 @@ void CheckDigitGenerator()
 
 }
 
-void CheckDigitChecker()
+void MiniApps::CheckDigitChecker()
 {
 	cout << "Check Digit Checker\n";
 	cout << "-------------------\n";
@@ -178,28 +127,18 @@ void CheckDigitChecker()
 
 }
 
-void pressEnterToStart()
+void MiniApps::pressEnterToStart()
 {
 	cin.get();
 	cin.ignore();
 }
 
-int returnRandomInteger(int range)
+int MiniApps::returnRandomInteger(int range)
 {
 	return rand() % range + 1;
 }
 
-bool numberIsNDigits(int number, int N)
+bool MiniApps::numberIsNDigits(int number, int N)
 {
-	return (number >= pow(10,N-1) && number < pow(10,N));
-}
-
-// find upper and lower bounds of the square root of the number
-int* findBounds(int number)
-{
-	int* bounds = (int*)malloc(sizeof(int) * 2);
-	int n = 0;
-	while (n * n < number) n++;
-	bounds[0] = n-1, bounds[1] = n;
-	return bounds;
+	return (number >= pow(10, N - 1) && number < pow(10, N));
 }
